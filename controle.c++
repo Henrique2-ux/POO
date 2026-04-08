@@ -1,99 +1,124 @@
 #include <iostream>
 #include <string>
-#include <map>
+#include <list>
+
 using namespace std;
 
+// Classe Funcionario
+class Funcionario {
+public:
+    Funcionario(string nome, int cpf, string funcao)
+        : nome(nome), cpf(cpf), funcao(funcao) {}
 
-class funcionario{
-    public:
-        funcionario(string nome, int cpf, string funcao){
-            this->nome = nome;
-            this->cpf = cpf;
-            this->funcao = funcao;
-        }
-        string getNome(){
-            return this->nome;
-        }
+    string getNome() const {
+        return nome;
+    }
 
-        string getFuncao(){
-            return this->funcao;
-        }
+    string getFuncao() const {
+        return funcao;
+    }
 
-        int getCpf(){
-            return this->cpf;
-        }
-    
-    private:
-        string nome;
-        string funcao;
-        int cpf;
+    int getCpf() const {
+        return cpf;
+    }
 
+private:
+    string nome;
+    string funcao;
+    int cpf;
 };
 
-class produto{
-    public:
-        produto(int cod, string nome, string fabricante){
-            this->nome = nome;
-            this->fabricante = fabricante;
-            this->cod = cod;
-        }
+// Classe Produto
+class Produto {
+public:
+    Produto(int cod, string nome, string fabricante)
+        : cod(cod), nome(nome), fabricante(fabricante) {}
 
-        string getNome(){
-            return this->nome;
-        }
+    string getNome() const {
+        return nome;
+    }
 
-        string getFabricante(){
-            return this->fabricante;
-        }
+    string getFabricante() const {
+        return fabricante;
+    }
 
-        int getCodigo(){
-            this->cod;
-        }
+    int getCodigo() const {
+        return cod;
+    }
 
-    private:
-        string nome;
-        string fabricante;
-        int cod;
+private:
+    int cod;
+    string nome;
+    string fabricante;
 };
 
-class intemMovimentado{
-    public:
-        intemMovimentado(produto* Produto, int quantidade){
-            this->Produto = Produto;
-            this->quantidade = quantidade;
-        }
+// Classe ItemMovimentado
+class ItemMovimentado {
+public:
+    ItemMovimentado(Produto* produto, int quantidade)
+        : produto(produto), quantidade(quantidade) {}
 
-        produto* getproduto(){
-            return &Produto;
-        }
+    Produto* getProduto() const {
+        return produto;
+    }
 
-        int getquantidade(){
-            return this->quantidade;
-        }
+    int getQuantidade() const {
+        return quantidade;
+    }
 
-    private:
-        produto* Produto;
-        int quantidade;
+private:
+    Produto* produto;
+    int quantidade;
 };
 
-class Movimentacao{
-    public:
-        Movimentacao(funcionario* funcionario){
-            this->funcionario = funcionario;
-        }
-        
-        list<intemMovimentado*> itens;
+// Classe Movimentacao
+class Movimentacao {
+public:
+    Movimentacao(Funcionario* funcionario)
+        : funcionario(funcionario) {}
 
-        funcionario* getFuncionario(){
-            return funcionario;
-        }
+    void adicionarItem(ItemMovimentado* item) {
+        itens.push_back(item);
+    }
 
-    private:
-        funcionario* funcionario;
+    Funcionario* getFuncionario() const {
+        return funcionario;
+    }
+
+    list<ItemMovimentado*> getItens() const {
+        return itens;
+    }
+
+private:
+    Funcionario* funcionario;
+    list<ItemMovimentado*> itens;
 };
 
-int main(){
+// Exemplo de uso
+int main() {
+    // Criando funcionários
+    Funcionario f1("João", 123456, "Gerente");
+    Funcionario f2("Maria", 987654, "Caixa");
 
-    
+    // Criando produtos
+    Produto p1(1, "Notebook", "Dell");
+    Produto p2(2, "Mouse", "Logitech");
+
+    // Criando itens movimentados
+    ItemMovimentado im1(&p1, 3);
+    ItemMovimentado im2(&p2, 10);
+
+    // Criando movimentação
+    Movimentacao mov(&f1);
+    mov.adicionarItem(&im1);
+    mov.adicionarItem(&im2);
+
+    // Exibindo informações
+    cout << "Movimentacao feita pelo funcionario: " << mov.getFuncionario()->getNome() << endl;
+    for (auto item : mov.getItens()) {
+        cout << "- Produto: " << item->getProduto()->getNome()
+             << ", Quantidade: " << item->getQuantidade() << endl;
+    }
+
     return 0;
 }
