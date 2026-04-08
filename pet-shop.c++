@@ -2,7 +2,7 @@
 #include <string>
 using namespace std;
 
-// ===================== Pessoa =====================
+
 class Pessoa {
 protected:
     string nome;
@@ -20,14 +20,12 @@ public:
     }
 };
 
-// ===================== Cliente (Tutor) =====================
 class Cliente : public Pessoa {
 public:
     Cliente(string nome, string telefone)
         : Pessoa(nome, telefone) {}
 };
 
-// ===================== Funcionario =====================
 class Funcionario : public Pessoa {
 private:
     string cargo;
@@ -42,7 +40,6 @@ public:
     }
 };
 
-// ===================== Animal =====================
 class Animal {
 private:
     string nome;
@@ -65,7 +62,6 @@ public:
     }
 };
 
-// ===================== Produto =====================
 class Produto {
 private:
     string nome;
@@ -84,7 +80,6 @@ public:
     }
 };
 
-// ===================== Servico =====================
 class Servico {
 private:
     string descricao;
@@ -104,24 +99,17 @@ public:
     }
 };
 
-// ===================== MAIN =====================
 int main() {
-    // Criando cliente (tutor)
-    Cliente cliente1("Joao Silva", "99999-0000");
+    Cliente cliente1("Joao Silva", "38 9988-5043");
 
-    // Criando funcionario
-    Funcionario func1("Maria Souza", "98888-1111", "Veterinaria");
+    Funcionario func1("Arthur Henrique", "38 99971-2862", "Veterinaria");
 
-    // Criando animal
     Animal animal1("Rex", "Cachorro", &cliente1);
 
-    // Criando produto
     Produto produto1("Racao Premium", 120.50);
 
-    // Criando servico
     Servico servico1("Consulta veterinaria", &func1);
 
-    // Exibindo tudo
     animal1.exibirInfo();
     produto1.exibir();
     servico1.exibir();
