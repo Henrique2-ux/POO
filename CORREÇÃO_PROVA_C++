@@ -1,0 +1,85 @@
+#include <iostream>
+#include <string>
+#include <list>
+
+using namespace std;
+
+class Veiculo {
+private:
+    string placa;
+    string nomeDono;
+
+public:
+    Veiculo(int placa, string nomeDono) : placa(to_string(placa)), nomeDono(nomeDono) {}
+    string getPlaca() const { return placa; }
+    string getNomeDono() const { return nomeDono; }
+};
+
+class Estacionamento {
+private:
+    Veiculo* veiculo;
+    string entrada;
+    string saida;
+
+public:
+    Estacionamento(Veiculo* v, string e, string s = "") : veiculo(v), entrada(e), saida(s) {}
+    Veiculo* getVeiculo() const { return veiculo; }
+    string getEntrada() const { return entrada; }
+    string getSaida() const { return saida; }
+};
+
+class VeiculoMovimentado {
+private:
+    Veiculo* veiculo;
+    int quantidade;
+
+public:
+    VeiculoMovimentado(Veiculo* v, int qtd = 1) : veiculo(v), quantidade(qtd) {}
+    Veiculo* getVeiculo() const { return veiculo; }
+    int getQuantidade() const { return quantidade; }
+};
+
+class Movimentacao {
+private:
+    list<Estacionamento*> itens;
+
+public:
+    void adicionarVeiculo(Estacionamento* item) {
+        itens.push_back(item);
+    }
+
+    list<Estacionamento*> getItens() const {
+        return itens;
+    }
+
+    int contarCarrosNoEstacionamento() const {
+        int count = 0;
+        for (auto* item : itens) {
+            if (item->getSaida().empty()) count++;
+        }
+        return count;
+    }
+};
+
+int main() {
+    Veiculo* v1 = new Veiculo(38389, "Arthur");  // 038GHTY -> 38389
+
+    Movimentacao mov;
+    Estacionamento* est = new Estacionamento(v1, "18:50");  // Entrada
+    mov.adicionarVeiculo(est);
+
+    cout << "Quantos carros tem no estacionamento: " << mov.contarCarrosNoEstacionamento() << endl;
+    for (auto* item : mov.getItens()) {
+        if (item->getSaida().empty()) {
+            cout << "Veiculo no estacionamento!" << endl;
+        }
+    }
+
+    // Simular saída
+    est->getSaida() = "19:50";  // Fechar (na real seria método setSaida)
+    cout << "Quantos carros tem no estacionamento: " << mov.contarCarrosNoEstacionamento() << endl;
+
+    delete est;
+    delete v1;
+    return 0;
+}
