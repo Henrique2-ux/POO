@@ -1,0 +1,49 @@
+Veiculo  (classe base / abstrata)
+│
+│── atributos comuns: placa, modelo, cor, ano, suspeito
+│── bagageiro (composição)
+│── métodos: getPlaca(), isSuspeito(), marcarSuspeito()
+│── métodos abstratos: exibir(), getTipo()  ← filhos OBRIGADOS a implementar
+│
+├── Carro  (herda de Veiculo)
+│     └── atributo extra: numPortas
+│
+├── Moto   (herda de Veiculo)
+│     └── atributo extra: cilindradas
+│
+└── Caminhao (herda de Veiculo)
+      └── atributo extra: capacidadeToneladas
+
+
+Veiculo tem:  placa, modelo, cor, ano
+                        ↓ herda tudo isso
+Carro tem:    placa, modelo, cor, ano  +  numPortas (próprio)
+Moto tem:     placa, modelo, cor, ano  +  cilindradas (próprio)
+Caminhao tem: placa, modelo, cor, ano  +  capacidadeToneladas (próprio)
+
+
+main.cpp
+│
+│  cria objetos → Carro, Moto, Caminhao
+│  adiciona itens no bagageiro de cada um
+│
+└── Fiscalizacao
+      │
+      │  recebe qualquer Veiculo* (polimorfismo)
+      │
+      ├── chama bagageiro.analisar()
+      │     │
+      │     └── percorre os itens
+      │           ├── achou substância? → resultado = "POSITIVO"
+      │           └── não achou?        → resultado = "LIVRE"
+      │
+      ├── resultado POSITIVO → marca veículo como suspeito
+      │
+      └── guarda o veículo na lista para o relatório
+
+
+Se é comum a todos     → fica em Veiculo (classe pai)
+Se é exclusivo de um   → fica na classe filha (Carro, Moto...)
+Se é parte do veículo  → vira composição (Bagageiro dentro de Veiculo)
+Se analisa tudo isso   → fica em Fiscalizacao
+
