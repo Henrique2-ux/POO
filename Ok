@@ -1,0 +1,77 @@
+
+#include "AvaliacaoOO.h"
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace blitz;
+
+// Função que inspeciona um item e coleta tokens de drogas
+void inspecionarItem(const ItemInspecionavel& item,
+                     std::vector<std::string>& tokens) {
+
+    // Droga direta no compartimento
+    if (std::holds_alternative<Droga>(item)) {
+        tokens.push_back(tokenDoItem(item));
+        std::cout << ">> DROGA encontrada! Token coletado.\n";
+        return;
+    }
+
+    // Droga dentro de uma Bolsa
+    if (const Bolsa* bolsa = std::get_if<Bolsa>(&item)) {
+        std::cout << "   Bolsa encontrada, abrindo...\n";
+        for (const ObjetoSolto& interno : bolsa->itens()) {
+            if (std::holds_alternative<Droga>(interno)) {
+                tokens.push_back(tokenDoObjetoSolto(interno));
+                std::cout << ">> DROGA encontrada dentro da bolsa!\n";
+            }
+        }
+        return;
+    }
+
+    // Droga dentro de uma Mala
+    if (const Mala* mala = std::get_if<Mala>(&item)) {
+        std::cout << "   Mala encontrada, abrindo...\n";
+        for (const ObjetoSolto& interno : mala->itens()) {
+            if (std::holds_alternative<Droga>(interno)) {
+                tokens.push_back(tokenDoObjetoSolto(interno));
+                std::cout << ">> DROGA encontrada dentro da mala!\n";
+            }
+        }
+        return;
+    }
+}
+
+int main() {
+    AtividadeBlitz atividade;
+    atividade.gerarFila(ModoProva::Facil);
+
+    const std::vector<Veiculo>& veiculos = atividade.veiculos();
+    std::vector<std::string> tokensEncontrados;
+
+    std::cout << "Total de veiculos na fila: " << veiculos.size() << "\n\n";
+
+    for (const Veiculo& veiculo : veiculos) {
+
+        // Para quando já tiver os 4 tokens
+        if (tokensEncontrados.size() == 4) break;
+
+        std::cout << "Inspecionando: " << veiculo.placa()
+                  << " | " << paraTexto(veiculo.modelo())
+                  << " | " << paraTexto(veiculo.corPredominante()) << "\n";
+
+        // Retorna todos os itens do veiculo
+        auto itens = atividade.inspecionarVeiculo(veiculo.placa());
+
+        for (const ItemInspecionavel* item : itens) {
+            inspecionarItem(*item, tokensEncontrados);
+        }
+    }
+
+    std::cout << "\nTokens coletados: " << tokensEncontrados.size() << "\n";
+
+    bool aprovado = atividade.validarTokens(tokensEncontrados);
+    std::cout << (aprovado ? "aprovado" : "reprovado") << "\n";
+
+    return 0;
+}
