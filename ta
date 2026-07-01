@@ -1,1 +1,54 @@
-ok
+#include <iostream>
+#include "ZooProva.h"
+
+using namespace std;
+
+bool animalDoente(const Animal* animal)
+{
+    FichaNormalidade ficha = animal->getFichaNormalidade();
+
+    if (animal->getTipoTemperaturaParaAnalise() == TipoTemperatura::Corporal)
+    {
+        double temperatura = animal->getTemperaturaCorporal();
+
+        return temperatura < ficha.temperaturaCorporalMin ||
+               temperatura > ficha.temperaturaCorporalMax;
+    }
+
+    double temperatura = animal->getTemperaturaRetal();
+
+    return temperatura < ficha.temperaturaRetalMin ||
+           temperatura > ficha.temperaturaRetalMax;
+}
+
+void vacinarAnimais(MotorZoo& motor,
+                    const vector<vector<const Animal*>>& jaulas)
+{
+    for (const auto& jaula : jaulas)
+    {
+        for (const Animal* animal : jaula)
+        {
+            if (animal != nullptr &&
+                animal->isTokenValido() &&
+                animalDoente(animal))
+            {
+                motor.vacinarAnimalPorToken(animal->getToken());
+            }
+        }
+    }
+}
+
+int main()
+{
+    MotorZoo motor;
+
+    motor.inicializarAmbiente();
+
+    auto jaulas = motor.obterJaulasParaAnalise();
+
+    vacinarAnimais(motor, jaulas);
+
+    motor.exibirResultadoFinal();
+
+    return 0;
+}
