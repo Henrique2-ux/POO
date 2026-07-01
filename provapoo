@@ -1,0 +1,161 @@
+# Prova de OO - Animais Doentes
+
+Pacote de biblioteca para a atividade de Programacao Orientada a Objetos.
+
+Padrao minimo de compilacao: C++11.
+
+## Ideia da prova
+
+Vacinar/remediar somente animais doentes. Se o animal doente for vacinado, ele sobrevive. Se o animal saudavel for vacinado, ele morre. Se o animal doente nao for vacinado, ele morre na correcao final. Será gerado uma lista de jaulas e com animais enjaulads, você deve cuidar da vacinação dos doentes. Ao final, não deve ter nenhum animal morto. Para identificar se um animal precisa de vacina, verifique na ficha do tipo de animal quais são os parâmetros vitais de saúde e confronte com os dados de cada animal. 
+
+Recebe acesso a uma matriz de jaulas com ponteiros `const Animal*`. Você consegue consultar especie, temperaturas, ficha de normalidade, criterio de temperatura e token, mas nao consegue alterar diretamente os animais.
+
+A verificacao da saude e a decisao de vacinar ficam no codigo do aluno. A biblioteca so oferece:
+
+- `obterJaulasParaAnalise()`: dados para analise.
+- `vacinarAnimalPorToken(token)`: acao de vacinacao decidida pelo aluno.
+- `exibirResultadoFinal()`: correcao e exibicao final, chamada uma unica vez.
+
+Se o animal doente for vacinado, ele sobrevive. Se o animal saudavel for vacinado, ele morre. Se o animal doente nao for vacinado, ele morre na correcao final.
+
+## Como usar a biblioteca
+
+Inclua o header no seu arquivo:
+
+```cpp
+#include "ZooProva.h"
+```
+
+Crie o motor da prova, inicialize o ambiente, percorra as jaulas, decida quais animais precisam de vacina e chame o resultado final uma unica vez:
+
+```cpp
+int main() {
+    MotorZoo motor;
+    motor.inicializarAmbiente();
+
+    auto jaulas = motor.obterJaulasParaAnalise();
+
+    //aqui é com você
+
+    motor.exibirResultadoFinal();
+    return 0;
+}
+```
+
+## Estrutura disponivel
+
+### `enum class TipoTemperatura`
+
+Indica qual temperatura deve ser usada para avaliar a saude do animal.
+
+- `TipoTemperatura::Corporal`
+- `TipoTemperatura::Retal`
+
+### `struct FichaNormalidade`
+
+Contem os limites considerados normais para a especie do animal.
+
+- `double temperaturaCorporalMin`
+- `double temperaturaCorporalMax`
+- `double temperaturaRetalMin`
+- `double temperaturaRetalMax`
+- `int batimentosMin`
+- `int batimentosMax`
+
+### `class Animal`
+
+Representa um animal dentro de uma jaula. O aluno recebe ponteiros `const Animal*`, portanto pode consultar os dados, mas nao pode alterar o animal diretamente.
+
+Metodos disponiveis:
+
+- `std::string getEspecie() const`: retorna o nome da especie.
+- `double getTemperaturaCorporal() const`: retorna a temperatura corporal medida.
+- `double getTemperaturaRetal() const`: retorna a temperatura retal medida.
+- `int getBatimentosCardiacos() const`: retorna os batimentos cardiacos medidos.
+- `int getToken() const`: retorna o token usado para solicitar a vacinacao.
+- `FichaNormalidade getFichaNormalidade() const`: retorna a ficha de valores normais da especie.
+- `TipoTemperatura getTipoTemperaturaParaAnalise() const`: informa se deve usar temperatura corporal ou retal na verificacao.
+- `bool isTokenValido() const`: retorna se o token ainda esta dentro do prazo de validade.
+
+Propriedades internas como estado de saude, se foi vacinado ou se estava doente no inicio nao ficam disponiveis diretamente. Isso faz parte da avaliacao.
+
+### `class MotorZoo`
+
+Controla a simulacao e a correcao.
+
+Metodos disponiveis:
+
+- `void inicializarAmbiente()`: gera as jaulas e os animais aleatoriamente. Deve ser chamado antes da analise.
+- `std::vector<std::vector<const Animal*>> obterJaulasParaAnalise() const`: retorna as jaulas com animais para consulta.
+- `bool vacinarAnimalPorToken(int token)`: solicita a vacina para o animal identificado pelo token. Retorna `true` se a acao foi aceita.
+- `ResultadoAvaliacao exibirResultadoFinal()`: corrige as decisoes, exibe o relatorio e retorna os dados do resultado. So pode ser chamado uma vez.
+- `bool resultadoJaFoiExibido() const`: informa se o resultado final ja foi exibido.
+
+### `struct ResultadoAvaliacao`
+
+Resultado retornado por `exibirResultadoFinal()`.
+
+- `std::size_t totalJaulas`
+- `std::size_t totalAnimais`
+- `std::size_t doentesIniciais`
+- `std::size_t saudaveisIniciais`
+- `std::size_t animaisVivos`
+- `std::size_t animaisMortos`
+- `std::size_t decisoesCorretas`
+- `std::size_t decisoesIncorretas`
+- `double aproveitamentoPercentual`
+
+## Regra esperada
+
+Para cada animal:
+
+1. Consulte `getTipoTemperaturaParaAnalise()`.
+2. Pegue a ficha com `getFichaNormalidade()`.
+3. Compare a temperatura correta com os limites da ficha.
+4. Se estiver fora do intervalo normal, chame `vacinarAnimalPorToken(animal->getToken())`.
+5. Se estiver dentro do intervalo normal, nao vacine.
+
+Exemplo de verificacao:
+
+```cpp
+bool precisaVacinar(const Animal& animal) {
+    double temp = animal.getTemperaturaRetal();
+    return temp < ficha.temperaturaRetalMin || temp > ficha.temperaturaRetalMax;
+}
+```
+
+## Gerar no Windows
+
+```powershell
+.\build_windows.ps1
+```
+
+Se o PowerShell bloquear scripts pela politica de execucao local, use:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\build_windows.ps1
+```
+
+Saida esperada:
+
+- `dist\windows\zoo_prova.dll`
+- `dist\windows\libzoo_prova.dll.a`
+- `dist\windows\aluno_exemplo.exe`
+
+## Gerar no Linux
+
+```bash
+chmod +x build_linux.sh
+./build_linux.sh
+```
+
+Saida esperada:
+
+- `dist/linux/libzoo_prova.so`
+- `dist/linux/aluno_exemplo`
+
+## Observacoes para distribuir aos alunos
+
+Entregue o header `include/ZooProva.h`, a biblioteca compilada da plataforma e um arquivo inicial baseado em `examples/aluno_exemplo.cpp`.
+
+Para uma prova real, remova ou oculte a implementacao em `src/ZooProva.cpp`, pois ela contem o gabarito interno.
